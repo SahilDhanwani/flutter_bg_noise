@@ -30,13 +30,13 @@ class BackgroundNoiseState extends State<BackgroundNoise> {
   }
 
   void onError(Object error) {
-    // print(error);
     stop();
   }
 
   Future<bool> checkPermission() async => await Permission.microphone.isGranted;
 
-  Future<void> requestPermission() async => await Permission.microphone.request();
+  Future<void> requestPermission() async =>
+      await Permission.microphone.request();
 
   Future<void> start() async {
     noiseMeter ??= NoiseMeter();
@@ -57,39 +57,45 @@ class BackgroundNoiseState extends State<BackgroundNoise> {
   }
 
   bool isNoiseBelowThreshold() {
-    return _latestReading?.meanDecibel != null && _latestReading!.meanDecibel < 120;
+    return _latestReading?.meanDecibel != null &&
+        _latestReading!.meanDecibel < 120;
   }
 
   @override
   Widget build(BuildContext context) => MaterialApp(
         home: Scaffold(
-          backgroundColor: Colors.blueGrey.shade100,
+          appBar: AppBar(
+            title: const Text("Noise Meter"),
+            backgroundColor: Colors.blueAccent, // Custom AppBar color
+            centerTitle: true,
+          ),
+          backgroundColor: Colors.blueGrey.shade100, // Subtle background color
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  'BACKGROUND NOISE',
+                  'BACKGROUND NOISE CALIBRATION',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                    color: Colors.blueAccent,
                   ),
-                ),
-                const Text(
-                  'CALIBRATION',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 30),
                 Image.asset(
-                  'assets/images/baground.jpg',
-                  width: MediaQuery.of(context).size.width * 0.5,
+                  'assets/images/background.jpg', // Update image path if needed
+                  width: MediaQuery.of(context).size.width * 0.6,
                 ),
                 Card(
-                  margin: const EdgeInsets.all(25),
-                  elevation: 5,
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -98,7 +104,9 @@ class BackgroundNoiseState extends State<BackgroundNoise> {
                           _isRecording ? "Microphone: ON" : "Microphone: OFF",
                           style: TextStyle(
                             fontSize: 20,
-                            color: _isRecording ? Colors.red : Colors.green,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                _isRecording ? Colors.redAccent : Colors.green,
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -106,6 +114,7 @@ class BackgroundNoiseState extends State<BackgroundNoise> {
                           'Noise Level: ${_latestReading?.meanDecibel != null ? _latestReading!.meanDecibel.toStringAsFixed(2) : "N/A"} dB',
                           style: const TextStyle(
                             fontSize: 18,
+                            color: Colors.black87,
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -113,7 +122,18 @@ class BackgroundNoiseState extends State<BackgroundNoise> {
                           onPressed: () {
                             SystemNavigator.pop(); // Exit the app
                           },
-                          child: const Text('Quit'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 30),
+                            backgroundColor: Colors.redAccent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Quit',
+                            style: TextStyle(fontSize: 18),
+                          ),
                         ),
                       ],
                     ),
@@ -123,10 +143,12 @@ class BackgroundNoiseState extends State<BackgroundNoise> {
             ),
           ),
           floatingActionButton: FloatingActionButton(
-            backgroundColor: _isRecording ? Colors.red : Colors.green,
+            backgroundColor: _isRecording ? Colors.redAccent : Colors.green,
             onPressed: _isRecording ? stop : start,
-            child: _isRecording ? const Icon(Icons.stop) : const Icon(Icons.mic),
+            child: Icon(_isRecording ? Icons.stop : Icons.mic,
+                size: 30, color: Colors.white),
           ),
         ),
+        debugShowCheckedModeBanner: false, // Hide the debug banner
       );
 }
